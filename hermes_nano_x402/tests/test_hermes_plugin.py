@@ -11,7 +11,7 @@ import pytest
 import hermes_nano_x402.plugin as plugin
 from hermes_nano_x402.scripted_model import ScriptedModel
 
-from conftest import PAY_TO, TEST_SEED
+from hermes_nano_x402.tests.helpers import PAY_TO, TEST_SEED
 
 URL = "https://seller.test/v1/hash"
 
@@ -90,7 +90,7 @@ def test_tool_output_never_contains_key_material(hermes_home, seller, monkeypatc
     import nanopy
     from hermes_nano_x402 import NanoX402Client, Policy
     from hermes_nano_x402.signer import AccountState
-    from conftest import FakeSession, FRONTIER, BALANCE, REP
+    from hermes_nano_x402.tests.helpers import FakeSession, FRONTIER, BALANCE, REP
 
     caplog.set_level(logging.DEBUG)
     seed = TEST_SEED[:-1] + "7"

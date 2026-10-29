@@ -33,6 +33,7 @@ dependencies = [
 test = ["pytest==9.2.0"]
 
 [project.scripts]
+hermes-nano-x402-demo = "hermes_nano_x402.agent_example:main"
 hermes-nano-x402-receive = "hermes_nano_x402.receive:main"
 
 [project.entry-points."hermes_agent.plugins"]
@@ -46,7 +47,7 @@ Source = "https://github.com/OWNER/hermes-nano-x402"
 packages = ["hermes_nano_x402"]
 
 [tool.hatch.build.targets.sdist]
-include = ["hermes_nano_x402", "tests", "examples", "README.md", "LICENSE", "pyproject.toml"]
+include = ["hermes_nano_x402", "examples", "README.md", "LICENSE", "pyproject.toml"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["hermes_nano_x402/tests"]

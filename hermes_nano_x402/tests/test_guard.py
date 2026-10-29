@@ -6,7 +6,7 @@ import json
 import nanopy
 import pytest
 
-from conftest import BALANCE, FRONTIER, ONE_MILLI_RAW, OTHER, PAY_TO, REP, b64, make_quote, response
+from hermes_nano_x402.tests.helpers import BALANCE, FRONTIER, ONE_MILLI_RAW, OTHER, PAY_TO, REP, b64, make_quote, response
 
 URL = "https://seller.test/v1/hash"
 
@@ -455,7 +455,7 @@ def _block_hash(blk):
 def test_receive_helper_opens_account_and_never_sends():
     from hermes_nano_x402 import NanopySigner
     from hermes_nano_x402.receive import receive_all
-    from conftest import TEST_SEED
+    from hermes_nano_x402.tests.helpers import TEST_SEED
 
     amount = 10**28
     ledger = {"frontier": None}
