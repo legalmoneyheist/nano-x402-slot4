@@ -291,5 +291,6 @@ class NanoX402Client:
         except (NanoX402Error, requests.RequestException, ValueError, KeyError) as e:
             if reserved:
                 self.guard.release(key)
-            return PayResult(False, None, False, url, refused="error",
+            code = e.code if isinstance(e, NanoX402Error) else "error"
+            return PayResult(False, None, False, url, refused=code,
                              message=f"{type(e).__name__}: {e}"[:500], spent_total_raw=self.guard.spent_raw)

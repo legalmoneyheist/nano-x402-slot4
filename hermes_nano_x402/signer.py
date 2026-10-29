@@ -44,7 +44,7 @@ class NanoSigner(Protocol):
 class NanopySigner:
     """Signs state send blocks with a private key held only inside this object."""
 
-    __slots__ = ("_sign", "_address")
+    __slots__ = ("_sign", "_receive", "_address")
 
     def __init__(self, private_key_hex: str):
         if not isinstance(private_key_hex, str) or not _HEX64.match(private_key_hex):
@@ -66,7 +66,24 @@ class NanopySigner:
             d["signature"] = d["signature"].upper()
             return SignedBlock(block=d, hash=b.hash_.upper())
 
+        def _receive(state: Optional[AccountState], send_hash: str, amount_raw: int, representative: str,
+                     work: str) -> SignedBlock:
+            a = nanopy.Account(sk=private_key_hex.lower())
+            if state is not None:
+                a.frontier = state.frontier.lower()
+                a.raw_bal = int(state.balance_raw)
+                a.rep = nanopy.Account(addr=state.representative)
+            rep = nanopy.Account(addr=representative) if representative else None
+            b = a.receive(send_hash.lower(), int(amount_raw), rep=rep, work=work)
+            d = dict(b.dict_)
+            for k in ("account", "representative"):
+                d[k] = d[k].replace("xrb_", "nano_", 1)
+            for k in ("previous", "link", "signature"):
+                d[k] = d[k].upper()
+            return SignedBlock(block=d, hash=b.hash_.upper())
+
         self._sign = _sign
+        self._receive = _receive
         self._address = address
 
     @property
@@ -75,6 +92,15 @@ class NanopySigner:
 
     def sign_send(self, state: AccountState, pay_to: str, amount_raw: int, work: str) -> SignedBlock:
         return self._sign(state, pay_to, amount_raw, work)
+
+    def sign_receive(self, state: Optional[AccountState], send_hash: str, amount_raw: int,
+                     representative: str, work: str) -> SignedBlock:
+        """Receive (or, with ``state=None``, open) block. Used only by the operator's receive command."""
+        return self._receive(state, send_hash, amount_raw, representative, work)
+
+    @property
+    def public_key(self) -> str:
+        return nanopy.Account(addr=self._address).pk.upper()
 
     def __repr__(self) -> str:
         return f"NanopySigner(address={self._address!r}, key=<redacted>)"
@@ -187,6 +213,7 @@ class WorkProvider:
     def __call__(self, root: str, threshold: str) -> str:
         if self.work_url:
             try:
+                # node-RPC shape; pursekeeper's POST /v1/work reads the same "hash" key
                 r = self.session.post(self.work_url, json={"action": "work_generate", "hash": root,
                                                            "difficulty": threshold},
                                       timeout=self.timeout, allow_redirects=False)

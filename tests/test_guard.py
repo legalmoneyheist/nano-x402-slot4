@@ -438,3 +438,51 @@ def test_caller_cannot_inject_payment_header(seller, signer, make_client):
     r = c.pay(URL, headers={"PAYMENT-SIGNATURE": "forged"}, request_id="x")
     assert r.paid
     assert seller.calls[0][2].get("PAYMENT-SIGNATURE") is None
+
+
+# --------------------------------------------------------------- operator receive helper (offline)
+
+def _block_hash(blk):
+    import hashlib
+    h = hashlib.blake2b(digest_size=32)
+    for part in (b"\x00" * 31 + b"\x06", bytes.fromhex(nanopy.Account(addr=blk["account"]).pk),
+                 bytes.fromhex(blk["previous"]), bytes.fromhex(nanopy.Account(addr=blk["representative"]).pk),
+                 int(blk["balance"]).to_bytes(16, "big"), bytes.fromhex(blk["link"])):
+        h.update(part)
+    return h.hexdigest().upper()
+
+
+def test_receive_helper_opens_account_and_never_sends():
+    from hermes_nano_x402 import NanopySigner
+    from hermes_nano_x402.receive import receive_all
+    from conftest import TEST_SEED
+
+    amount = 10**28
+    ledger = {"frontier": None}
+    posted = []
+
+    class Api:
+        def get(self, url, params=None, **kw):
+            if url.endswith("/v1/receivable"):
+                return response(200, json.dumps({"blocks": [{"hash": "C" * 64, "amount_raw": str(amount),
+                                                             "from": PAY_TO}]}))
+            if params["account"] == PAY_TO:  # the sender: its representative is reused for the open
+                return response(200, json.dumps({"found": True, "representative": REP}))
+            if ledger["frontier"] is None:
+                return response(200, json.dumps({"found": False}))
+            return response(200, json.dumps({"found": True, "frontier": ledger["frontier"],
+                                             "confirmed_frontier": ledger["frontier"],
+                                             "balance_raw": str(amount), "representative": REP}))
+
+        def post(self, url, json=None, **kw):
+            posted.append(json)
+            ledger["frontier"] = _block_hash(json["block"])  # node confirms it at once
+            return response(200, '{"ok": true}')
+
+    out = receive_all(NanopySigner.from_seed(TEST_SEED, 0), "https://api.test", session=Api(),
+                      work=lambda root, thr: "2" * 16, log=lambda *a: None)
+    assert out == [ledger["frontier"]] and len(posted) == 1
+    assert posted[0]["subtype"] == "open"
+    blk = posted[0]["block"]
+    assert blk["previous"] == "0" * 64 and int(blk["balance"]) == amount and blk["link"] == "C" * 64
+    assert blk["representative"] == REP

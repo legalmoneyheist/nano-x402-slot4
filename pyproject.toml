@@ -32,6 +32,9 @@ dependencies = [
 [project.optional-dependencies]
 test = ["pytest==9.2.0"]
 
+[project.scripts]
+hermes-nano-x402-receive = "hermes_nano_x402.receive:main"
+
 [project.entry-points."hermes_agent.plugins"]
 nano-x402 = "hermes_nano_x402"
 
