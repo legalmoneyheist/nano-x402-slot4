@@ -3,14 +3,14 @@ requires = ["hatchling==1.27.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "hermes-nano-x402"
+name = "hermes-x402-nano"
 version = "0.1.0"
 description = "Hermes Agent plugin: pay x402 'exact' quotes on nano:mainnet (XNO) behind an offline-tested payment guard"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.11,<3.14"
-authors = [{ name = "hermes-nano-x402 contributors" }]
+authors = [{ name = "hermes-x402-nano contributors" }]
 keywords = ["hermes-agent", "hermes", "plugin", "x402", "nano", "xno", "payments", "agents"]
 classifiers = [
   "Programming Language :: Python :: 3",
@@ -33,21 +33,21 @@ dependencies = [
 test = ["pytest==9.2.0"]
 
 [project.scripts]
-hermes-nano-x402-demo = "hermes_nano_x402.agent_example:main"
-hermes-nano-x402-receive = "hermes_nano_x402.receive:main"
+hermes-x402-nano-demo = "hermes_x402_nano.agent_example:main"
+hermes-x402-nano-receive = "hermes_x402_nano.receive:main"
 
 [project.entry-points."hermes_agent.plugins"]
-nano-x402 = "hermes_nano_x402"
+x402-nano = "hermes_x402_nano"
 
 [project.urls]
-Homepage = "https://github.com/OWNER/hermes-nano-x402"
-Source = "https://github.com/OWNER/hermes-nano-x402"
+Homepage = "https://github.com/OWNER/hermes-x402-nano"
+Source = "https://github.com/OWNER/hermes-x402-nano"
 
 [tool.hatch.build.targets.wheel]
-packages = ["hermes_nano_x402"]
+packages = ["hermes_x402_nano"]
 
 [tool.hatch.build.targets.sdist]
-include = ["hermes_nano_x402", "examples", "README.md", "LICENSE", "pyproject.toml"]
+include = ["hermes_x402_nano", "examples", "README.md", "LICENSE", "pyproject.toml"]
 
 [tool.pytest.ini_options]
-testpaths = ["hermes_nano_x402/tests"]
+testpaths = ["hermes_x402_nano/tests"]

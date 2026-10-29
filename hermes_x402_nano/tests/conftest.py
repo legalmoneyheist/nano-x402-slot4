@@ -4,9 +4,9 @@ import socket
 
 import pytest
 
-from hermes_nano_x402 import NanoX402Client, Policy
-from hermes_nano_x402.signer import AccountState
-from hermes_nano_x402.tests.helpers import BALANCE, FRONTIER, PAY_TO, REP, CountingSigner, FakeSession, Seller
+from hermes_x402_nano import NanoX402Client, Policy
+from hermes_x402_nano.signer import AccountState
+from hermes_x402_nano.tests.helpers import BALANCE, FRONTIER, PAY_TO, REP, CountingSigner, FakeSession, Seller
 
 
 @pytest.fixture(autouse=True)

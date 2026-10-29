@@ -1,10 +1,10 @@
-# hermes-nano-x402
+# hermes-x402-nano
 
 A [Hermes Agent](https://pypi.org/project/hermes-agent/) plugin that lets the agent pay for HTTP
 resources with **x402 `exact` on `nano:mainnet`** (XNO). A payment guard runs before anything is signed.
 
-It adds one tool, `nano_x402_pay`, in the toolset `nano-x402`. It is a pip entry-point plugin
-(`hermes_agent.plugins` → `nano-x402`) that registers through `ctx.register_tool`.
+It adds one tool, `nano_x402_pay`, in the toolset `x402-nano`. It is a pip entry-point plugin
+(`hermes_agent.plugins` → `x402-nano`) that registers through `ctx.register_tool`.
 
 * Pinned: `hermes-agent==0.19.0`, `nanopy==28.0.1.post26` (block building, blake2b, ed25519, CPU work),
   `x402-nano-exact==0.1.2` (scheme constants and address validation), `requests==2.33.0`. Python 3.11–3.13.
@@ -19,13 +19,13 @@ It adds one tool, `nano_x402_pay`, in the toolset `nano-x402`. It is a pip entry
 ## Install (one command, no install scripts)
 
 ```sh
-pip install --only-binary :all: "hermes-nano-x402[test]==0.1.0"
+pip install --only-binary :all: "hermes-x402-nano[test]==0.1.0"
 ```
 
 `--only-binary :all:` installs wheels only, so no package build or install script runs. Every
-dependency ships a wheel. With uv, the equivalent is `uv pip install --no-build "hermes-nano-x402[test]==0.1.0"`.
+dependency ships a wheel. With uv, the equivalent is `uv pip install --no-build "hermes-x402-nano[test]==0.1.0"`.
 
-To use it in your own Hermes setup: `hermes plugins enable nano-x402` (entry-point plugins are opt-in).
+To use it in your own Hermes setup: `hermes plugins enable x402-nano` (entry-point plugins are opt-in).
 
 ## Configure (environment only; nothing secret is in the package)
 
@@ -41,24 +41,24 @@ To use it in your own Hermes setup: `hermes plugins enable nano-x402` (entry-poi
 
 You can inject a signer instead of using the environment: build `NanoX402Client(policy, signer=...)` with
 any object that has `.address` and `.sign_send(state, pay_to, amount_raw, work)`, then pass it to
-`hermes_nano_x402.plugin.set_client(...)`.
+`hermes_x402_nano.plugin.set_client(...)`.
 
 A fresh account has to receive (open) before it can send. After funding the address, run
-`hermes-nano-x402-receive` once. It publishes receive/open blocks only and never sends.
+`hermes-x402-nano-receive` once. It publishes receive/open blocks only and never sends.
 
 ## Example: one paid call from the Hermes agent loop (Ӿ0.001 at pursekeeper.dev)
 
 ```sh
 export NANO_SEED=...   # throwaway wallet, funded with ~Ӿ0.01 and opened
 export NANO_X402_ALLOWED_PAYTO=nano_1xug1q5t7nxoj3ywwzokiea9jz8fq8qfgzp8pbyfr3co3e5xgj755uofu8ue
-hermes-nano-x402-demo https://pursekeeper.dev/v1/hash --method POST --body hello
+hermes-x402-nano-demo https://pursekeeper.dev/v1/hash --method POST --body hello
 ```
 
-`hermes-nano-x402-demo` (source: `hermes_nano_x402/agent_example.py`) runs Hermes' own
+`hermes-x402-nano-demo` (source: `hermes_x402_nano/agent_example.py`) runs Hermes' own
 `run_agent.AIAgent` loop:
 
-1. It uses a throwaway `HERMES_HOME` whose `config.yaml` enables `nano-x402`.
-2. `enabled_toolsets=["nano-x402"]`, so Hermes discovers the plugin through its entry point and offers the tool.
+1. It uses a throwaway `HERMES_HOME` whose `config.yaml` enables `x402-nano`.
+2. `enabled_toolsets=["x402-nano"]`, so Hermes discovers the plugin through its entry point and offers the tool.
 3. The model's tool call runs through Hermes' tool executor, and the result goes back to the model.
 
 By default the model is a scripted OpenAI-compatible stand-in on `127.0.0.1`, so no LLM key is
@@ -66,7 +66,7 @@ needed. Its first turn calls `nano_x402_pay` once, and its second turn reports t
 real model decide, pass `--model NAME --base-url URL` and set `OPENAI_API_KEY`. The demo prints the
 status, amount, block hash and body. It exits 0 only when the paid request returned 2xx.
 
-Also free to try: `hermes-nano-x402-demo "https://pursekeeper.dev/v1/fetch?url=https://example.com" --method GET`.
+Also free to try: `hermes-x402-nano-demo "https://pursekeeper.dev/v1/fetch?url=https://example.com" --method GET`.
 
 ## The guard (all before signing)
 
@@ -90,7 +90,7 @@ Also free to try: `hermes-nano-x402-demo "https://pursekeeper.dev/v1/fetch?url=h
 ## Offline tests
 
 ```sh
-python -m pytest -p no:cacheprovider --pyargs hermes_nano_x402.tests
+python -m pytest -p no:cacheprovider --pyargs hermes_x402_nano.tests
 ```
 
 The tests ship inside the package. They make no network connections (any non-loopback `connect`

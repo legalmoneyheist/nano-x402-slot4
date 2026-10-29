@@ -6,8 +6,8 @@ import requests
 
 import nanopy
 
-from hermes_nano_x402 import NanoX402Client, NanopySigner, Policy
-from hermes_nano_x402.signer import AccountState
+from hermes_x402_nano import NanoX402Client, NanopySigner, Policy
+from hermes_x402_nano.signer import AccountState
 
 # Well-known public all-zeros seed: test signatures only, offline. Never fund it.
 TEST_SEED = "0" * 64

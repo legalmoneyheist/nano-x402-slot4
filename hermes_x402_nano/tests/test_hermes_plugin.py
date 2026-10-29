@@ -8,17 +8,17 @@ import os
 
 import pytest
 
-import hermes_nano_x402.plugin as plugin
-from hermes_nano_x402.scripted_model import ScriptedModel
+import hermes_x402_nano.plugin as plugin
+from hermes_x402_nano.scripted_model import ScriptedModel
 
-from hermes_nano_x402.tests.helpers import PAY_TO, TEST_SEED
+from hermes_x402_nano.tests.helpers import PAY_TO, TEST_SEED
 
 URL = "https://seller.test/v1/hash"
 
 
 @pytest.fixture
 def hermes_home(tmp_path, monkeypatch):
-    (tmp_path / "config.yaml").write_text("plugins:\n  enabled:\n    - nano-x402\n")
+    (tmp_path / "config.yaml").write_text("plugins:\n  enabled:\n    - x402-nano\n")
     monkeypatch.setenv("HERMES_HOME", str(tmp_path))
     monkeypatch.setenv("NANO_X402_ALLOWED_PAYTO", PAY_TO)
     return tmp_path
@@ -32,7 +32,7 @@ def run_agent_once(tool_args):
     base = model.start()
     try:
         agent = AIAgent(base_url=base, api_key="scripted", provider="custom", model="scripted",
-                        enabled_toolsets=["nano-x402"], quiet_mode=True, skip_context_files=True,
+                        enabled_toolsets=["x402-nano"], quiet_mode=True, skip_context_files=True,
                         skip_memory=True, max_iterations=4, tool_delay=0)
         result = agent.run_conversation("Fetch the resource with nano_x402_pay once.")
     finally:
@@ -44,7 +44,7 @@ def run_agent_once(tool_args):
 def test_entry_point_is_declared():
     from importlib.metadata import entry_points
     eps = {e.name: e.value for e in entry_points(group="hermes_agent.plugins")}
-    assert eps.get("nano-x402") == "hermes_nano_x402"
+    assert eps.get("x402-nano") == "hermes_x402_nano"
 
 
 def test_register_uses_hermes_context():
@@ -54,7 +54,7 @@ def test_register_uses_hermes_context():
         def register_tool(self, **kw):
             calls.append(kw)
     plugin.register(Ctx())
-    assert calls[0]["name"] == "nano_x402_pay" and calls[0]["toolset"] == "nano-x402"
+    assert calls[0]["name"] == "nano_x402_pay" and calls[0]["toolset"] == "x402-nano"
     assert calls[0]["schema"]["parameters"]["required"] == ["url"]
 
 
@@ -88,9 +88,9 @@ def test_tool_output_never_contains_key_material(hermes_home, seller, monkeypatc
     """Env signer end to end: the seed and private key appear in no tool output, log or stream."""
     import logging
     import nanopy
-    from hermes_nano_x402 import NanoX402Client, Policy
-    from hermes_nano_x402.signer import AccountState
-    from hermes_nano_x402.tests.helpers import FakeSession, FRONTIER, BALANCE, REP
+    from hermes_x402_nano import NanoX402Client, Policy
+    from hermes_x402_nano.signer import AccountState
+    from hermes_x402_nano.tests.helpers import FakeSession, FRONTIER, BALANCE, REP
 
     caplog.set_level(logging.DEBUG)
     seed = TEST_SEED[:-1] + "7"

@@ -1,4 +1,4 @@
-"""Hermes Agent plugin: registers the ``nano_x402_pay`` tool in the ``nano-x402`` toolset."""
+"""Hermes Agent plugin: registers the ``nano_x402_pay`` tool in the ``x402-nano`` toolset."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from .errors import NanoX402Error
 logger = logging.getLogger(__name__)
 
 TOOL_NAME = "nano_x402_pay"
-TOOLSET = "nano-x402"
+TOOLSET = "x402-nano"
 
 SCHEMA = {
     "name": TOOL_NAME,

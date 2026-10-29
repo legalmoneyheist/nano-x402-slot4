@@ -1,6 +1,6 @@
 """Operator command: pocket (receive / open) what was sent to the paying account.
 
-    hermes-nano-x402-receive            # uses NANO_SEED / NANO_PRIVATE_KEY from the environment
+    hermes-x402-nano-receive            # uses NANO_SEED / NANO_PRIVATE_KEY from the environment
 
 A fresh Nano account cannot send until its first (open) block is confirmed, so fund the address,
 run this once, then run the agent. This command only publishes receive/open blocks; it never sends.
