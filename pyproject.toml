@@ -40,8 +40,8 @@ hermes-x402-nano-receive = "hermes_x402_nano.receive:main"
 x402-nano = "hermes_x402_nano"
 
 [project.urls]
-Homepage = "https://github.com/OWNER/hermes-x402-nano"
-Source = "https://github.com/OWNER/hermes-x402-nano"
+Homepage = "https://github.com/legalmoneyheist/nano-x402-slot4"
+Source = "https://github.com/legalmoneyheist/nano-x402-slot4"
 
 [tool.hatch.build.targets.wheel]
 packages = ["hermes_x402_nano"]
